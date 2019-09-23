@@ -10,13 +10,13 @@ const baseConfig = {
     directory: "./db/seeds"
   }
 };
-
+console.log(username);
 const customConfig = {
   development: {
     connection: {
       database: "nc_news",
-      username,
-      password
+      username: username,
+      password: password
     }
   },
   test: {
