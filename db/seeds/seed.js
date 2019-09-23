@@ -14,12 +14,14 @@ exports.seed = function(connection) {
       return connection.migrate.latest();
     })
     .then(() => {
-      const topicsInsertions = connection("topics").insert(topicData);
-      const usersInsertions = connection("users").insert(userData);
+      const topicsInsertions = connection("topics").insert(topicData, "*");
+      const usersInsertions = connection("users").insert(userData, "*");
 
       return Promise.all([topicsInsertions, usersInsertions]);
     })
-    .then(() => {
+    .then(([topics, users]) => {
+      console.log(topics);
+      console.log(users);
       /* 
       
       Your article data is currently in the incorrect format and will violate your SQL schema. 

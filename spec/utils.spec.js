@@ -42,6 +42,35 @@ describe("formatDates", () => {
   });
 });
 
-describe("makeRefObj", () => {});
+describe("makeRefObj", () => {
+  it("does not mutate the original array", () => {
+    const input = [
+      { article_id: 1468087638932, title: "bob" },
+      { article_id: 1478813209256, title: "name" },
+      { article_id: 1504183900263, title: "title" }
+    ];
+    const output = makeRefObj(input);
+    expect(input).to.eql([
+      { article_id: 1468087638932, title: "bob" },
+      { article_id: 1478813209256, title: "name" },
+      { article_id: 1504183900263, title: "title" }
+    ]);
+    expect(output).to.not.equal(input);
+  });
+  it("returns a reference object with key of an object's title, with a value of the object's article_id", () => {
+    const input = [{ article_id: 1, title: "article_Title" }];
+    expect(makeRefObj(input)).to.eql({ article_Title: 1 });
+  });
+  it("returns a reference object with keys of multiple objects' titles, with values of their article_ids", () => {
+    const input = [
+      { article_id: 1, title: "article_Title" },
+      { article_id: 2, title: "Article about frogs" }
+    ];
+    expect(makeRefObj(input)).to.eql({
+      article_Title: 1,
+      "Article about frogs": 2
+    });
+  });
+});
 
 describe("formatComments", () => {});

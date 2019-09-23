@@ -4,15 +4,17 @@ exports.up = function(connection) {
     commentTable.increments("comment_id").primary();
     commentTable
       .integer("article_id")
-      .references(articles.article_id)
+      .references("article_id")
+      .inTable("articles")
       .notNullable();
     commentTable.text("body").notNullable();
     commentTable.integer("votes").defaultTo(0);
     commentTable
       .string("author")
-      .references(users.username)
+      .references("username")
+      .inTable("users")
       .notNullable();
-    commentTable.timestamp(created_at).defaultTo(connection.fn.now());
+    commentTable.timestamp("created_at").defaultTo(connection.fn.now());
   });
 };
 
