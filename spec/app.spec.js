@@ -27,10 +27,10 @@ describe("/api/topics", () => {
       return request
         .get("/api/topics")
         .expect(200)
-        .then(({ body }) => {
-          expect(body).to.be.an.instanceOf(Array);
-          expect(body[0]).to.be.an.instanceOf(Object);
-          expect(body[0]).to.have.keys("slug", "description");
+        .then(({ body: { topics } }) => {
+          expect(topics).to.be.an.instanceOf(Array);
+          expect(topics[0]).to.be.an.instanceOf(Object);
+          expect(topics[0]).to.have.keys("slug", "description");
         });
     });
   });
@@ -54,9 +54,9 @@ describe("/api/users/:username", () => {
       return request
         .get("/api/users/butter_bridge")
         .expect(200)
-        .then(({ body }) => {
-          expect(body).to.be.an.instanceOf(Object);
-          expect(body).to.have.keys("username", "avatar_url", "name");
+        .then(({ body: { user } }) => {
+          expect(user).to.be.an.instanceOf(Object);
+          expect(user).to.have.keys("username", "avatar_url", "name");
         });
     });
     it("responds 404: User not found for any non-existent username", () => {
