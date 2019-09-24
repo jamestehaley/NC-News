@@ -6,6 +6,9 @@ const {
 } = require("../db/utils/utils");
 
 describe("formatDates", () => {
+  it("returns undefined if no list is passed", () => {
+    expect(formatDates()).to.eql(undefined);
+  });
   it("does not mutate the original array", () => {
     const input = [
       { created_at: 1468087638932, name: "bob" },
@@ -43,6 +46,9 @@ describe("formatDates", () => {
 });
 
 describe("makeRefObj", () => {
+  it("returns undefined if no list is passed", () => {
+    expect(makeRefObj()).to.eql(undefined);
+  });
   it("does not mutate the original array", () => {
     const input = [
       { article_id: 1468087638932, title: "bob" },
@@ -74,6 +80,26 @@ describe("makeRefObj", () => {
 });
 
 describe("formatComments", () => {
+  it("returns undefined if no comments or no reference object are passed", () => {
+    expect(
+      formatComments([
+        {
+          body:
+            "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+          belongs_to: "Living in the shadow of a great man",
+          created_by: "butter_bridge",
+          votes: 14,
+          created_at: 1479818163389
+        }
+      ])
+    ).to.eql(undefined);
+    expect(
+      formatComments({
+        article_Title: 1,
+        "Article about frogs": 2
+      })
+    ).to.eql(undefined);
+  });
   it("does not mutate the original comments array or reference object", () => {
     const comments = [
       {
