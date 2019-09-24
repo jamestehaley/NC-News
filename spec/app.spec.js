@@ -48,3 +48,37 @@ describe("/api/topics", () => {
     });
   });
 });
+describe("/api/users/:username", () => {
+  describe("GET", () => {
+    it("responds 200 with a single user object", () => {
+      return request
+        .get("/api/users/butter_bridge")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.be.an.instanceOf(Object);
+          expect(body).to.have.keys("username", "avatar_url", "name");
+        });
+    });
+    it("responds 404: User not found for any non-existent username", () => {
+      return request
+        .get("/api/users/1")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("404: User not found!");
+        });
+    });
+  });
+  describe("INVALID METHODS", () => {
+    it("responds 405: Method not allowed for any unexpected method", () => {
+      const invalidMethods = ["patch", "put", "delete", "post"];
+      const promises = invalidMethods.map(method => {
+        return request[method]("/api/topics")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("405: Method not allowed!");
+          });
+      });
+      return Promise.all(promises);
+    });
+  });
+});
