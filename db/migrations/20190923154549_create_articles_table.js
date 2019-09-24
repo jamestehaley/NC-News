@@ -1,5 +1,4 @@
 exports.up = function(connection) {
-  console.log("creating articles table...");
   return connection.schema.createTable("articles", articleTable => {
     articleTable.increments("article_id").primary();
     articleTable.string("title").notNullable();

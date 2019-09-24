@@ -1,5 +1,4 @@
 exports.up = function(connection) {
-  console.log("creating users table...");
   return connection.schema.createTable("users", usersTable => {
     usersTable
       .string("username")

@@ -1,5 +1,4 @@
 exports.up = function(connection) {
-  console.log("creating comments table...");
   return connection.schema.createTable("comments", commentTable => {
     commentTable.increments("comment_id").primary();
     commentTable
