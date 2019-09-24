@@ -73,4 +73,109 @@ describe("makeRefObj", () => {
   });
 });
 
-describe("formatComments", () => {});
+describe("formatComments", () => {
+  it("does not mutate the original comments array or reference object", () => {
+    const comments = [
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      },
+      {
+        body:
+          "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "icellusedkars",
+        votes: 100,
+        created_at: 1448282163389
+      },
+      {
+        body: " I carry a log — yes. Is it funny to you? It is not to me.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "icellusedkars",
+        votes: -100,
+        created_at: 1416746163389
+      }
+    ];
+    const refObj = { "Living in the shadow of a great man": 1 };
+    const output = formatComments(comments, refObj);
+    expect(comments).to.eql([
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      },
+      {
+        body:
+          "Replacing the quiet elegance of the dark suit and tie with the casual indifference of these muted earth tones is a form of fashion suicide, but, uh, call me crazy — onyou it works.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "icellusedkars",
+        votes: 100,
+        created_at: 1448282163389
+      },
+      {
+        body: " I carry a log — yes. Is it funny to you? It is not to me.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "icellusedkars",
+        votes: -100,
+        created_at: 1416746163389
+      }
+    ]);
+    expect(refObj).to.eql({ "Living in the shadow of a great man": 1 });
+    expect(output).to.not.equal(comments);
+  });
+  it("returns a new array with an author key of the original 'created by' value", () => {
+    const comments = [
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      }
+    ];
+    const refObj = { "Living in the shadow of a great man": 1 };
+    const output = formatComments(comments, refObj);
+    expect(output[0].author).to.equal("butter_bridge");
+    expect(output[0]).to.not.haveOwnProperty("created_by");
+  });
+  it("returns a new array with an article_id key instead of the original 'belongs_to' key, with the value of the corresponding article's id", () => {
+    const comments = [
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      }
+    ];
+    const refObj = { "Living in the shadow of a great man": 1 };
+    const output = formatComments(comments, refObj);
+    expect(output[0]).to.not.haveOwnProperty("belongs_to");
+    expect(output[0]).to.haveOwnProperty("article_id");
+    expect(output[0].article_id).to.equal(1);
+  });
+  it("returns the array of objects with their created_at value reformatted to javascript date objects", () => {
+    const comments = [
+      {
+        body:
+          "The beautiful thing about treasure is that it exists. Got to find out what kind of sheets these are; not cotton, not rayon, silky.",
+        belongs_to: "Living in the shadow of a great man",
+        created_by: "butter_bridge",
+        votes: 14,
+        created_at: 1479818163389
+      }
+    ];
+    const refObj = { "Living in the shadow of a great man": 1 };
+    const output = formatComments(comments, refObj);
+    expect(output[0].created_at).to.be.an.instanceOf(Date);
+  });
+});

@@ -17,4 +17,16 @@ exports.makeRefObj = list => {
   return refObj;
 };
 
-exports.formatComments = (comments, articleRef) => {};
+exports.formatComments = (comments, refObj) => {
+  const formattedComments = [];
+  comments.forEach((comment, index) => {
+    formattedComments[index] = { ...comment };
+    formattedComments[index].author = formattedComments[index].created_by;
+    delete formattedComments[index].created_by;
+    formattedComments[index].article_id =
+      refObj[formattedComments[index].belongs_to];
+    delete formattedComments[index].belongs_to;
+    formattedComments[index].created_at = new Date(comment.created_at);
+  });
+  return formattedComments;
+};
