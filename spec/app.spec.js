@@ -49,6 +49,7 @@ describe("/api/topics", () => {
     });
   });
 });
+
 describe("/api/users/:username", () => {
   describe("GET", () => {
     it("responds 200 with a single user object", () => {
@@ -84,7 +85,7 @@ describe("/api/users/:username", () => {
   });
 });
 
-describe.only("/api/articles/:article_id", () => {
+describe("/api/articles/:article_id", () => {
   describe("GET", () => {
     it("responds 200 with an article object", () => {
       return request
@@ -111,6 +112,22 @@ describe.only("/api/articles/:article_id", () => {
           expect(article).to.contain.keys("comment_count");
         });
     });
+    it("responds 404: Article not found when passed a valid but non existent article_id", () => {
+      return request
+        .get("/api/articles/12333333333")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("404: Item not found!");
+        });
+    });
+    it("responds 400: Article type invalid when passed an invalid article_id", () => {
+      return request
+        .get("/api/articles/hello")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("400: Item invalid!");
+        });
+    });
   });
   describe("PATCH", function() {
     it("responds 202 with a copy of the updated article object, which has its votes property modified", () => {
@@ -131,12 +148,96 @@ describe.only("/api/articles/:article_id", () => {
           expect(msg).to.equal("400: Votes must be a number!");
         });
     });
+    it("responds 404: Article not found when passed a valid but non existent article_id", () => {
+      return request
+        .patch("/api/articles/12333333333")
+        .send({ inc_votes: 1 })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("404: Item not found!");
+        });
+    });
+    it("responds 400: Article type invalid when passed an invalid article_id", () => {
+      return request
+        .patch("/api/articles/hello")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("400: Item invalid!");
+        });
+    });
   });
   describe("INVALID METHODS", () => {
     it("responds 405: Method not allowed for any unexpected method", () => {
       const invalidMethods = ["put", "delete", "post"];
       const promises = invalidMethods.map(method => {
         return request[method]("/api/articles/1")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("405: Method not allowed!");
+          });
+      });
+      return Promise.all(promises);
+    });
+  });
+});
+
+describe("/api/articles/:article_id/comments", () => {
+  describe("POST", () => {
+    it("responds 201 with a copy of the inserted comment", () => {
+      return request
+        .post("/api/articles/1/comments")
+        .send({ username: "lurker", body: "nice!" })
+        .expect(201)
+        .then(({ body: { comment } }) => {
+          expect(comment.body).to.equal("nice!");
+          expect(comment.author).to.equal("lurker");
+          expect(comment.votes).to.equal(0);
+          expect(comment.article_id).to.equal(1);
+          expect(comment).to.include.keys("created_at", "comment_id");
+        });
+    });
+    it("responds 404: Item breaks foreign key constraint when the article_id is valid but non-existent", () => {
+      return request
+        .post("/api/articles/12333/comments")
+        .send({ username: "lurker", body: "nice!" })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("404: Item breaks foreign key constraint!");
+        });
+    });
+    it("responds 400: Item invalid when the article_id is invalid", () => {
+      return request
+        .post("/api/articles/hello/comments")
+        .send({ username: "lurker", body: "nice!" })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("400: Item invalid!");
+        });
+    });
+    it("responds 400: Missing field when the object is lacking a username or body value", () => {
+      return request
+        .post("/api/articles/1/comments")
+        .send({ body: "nice!" })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("400: Missing field!");
+        });
+    });
+    it("responds 422: Body breaks foreign key constraint when the username value in the body does not match an existing username", () => {
+      return request
+        .post("/api/articles/1/comments")
+        .send({ username: "jellybeeen", body: "nice!" })
+        .expect(422)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("422: Body breaks foreign key constraint!");
+        });
+    });
+  });
+  describe("INVALID METHODS", () => {
+    it("responds 405: Method not allowed for any unexpected method", () => {
+      const invalidMethods = ["patch", "put", "delete", "get"];
+      const promises = invalidMethods.map(method => {
+        return request[method]("/api/articles/1/comments")
           .expect(405)
           .then(({ body: { msg } }) => {
             expect(msg).to.equal("405: Method not allowed!");
