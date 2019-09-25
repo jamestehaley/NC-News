@@ -122,6 +122,15 @@ describe.only("/api/articles/:article_id", () => {
           expect(article.votes).to.equal(101);
         });
     });
+    it("responds 400: Bad request when passed an inc_votes key that is not a number", () => {
+      return request
+        .patch("/api/articles/1")
+        .send({ inc_votes: "hello!" })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("400: Votes must be a number!");
+        });
+    });
   });
   describe("INVALID METHODS", () => {
     it("responds 405: Method not allowed for any unexpected method", () => {
