@@ -1,8 +1,11 @@
 process.env.NODE_ENV = "test";
 const app = require("../app");
-const { expect } = require("chai");
+const chai = require("chai");
+const { expect } = chai;
+const chaiSorted = require("chai-sorted");
 const request = require("supertest")(app);
 const connection = require("../db/connection");
+chai.use(chaiSorted);
 
 beforeEach(function() {
   this.timeout(10000);
@@ -233,9 +236,66 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
+  describe.only("GET", () => {
+    it("responds 200 with an array of the comments for the article", () => {
+      return request
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).to.be.an.instanceOf(Array);
+          expect(comments[0]).to.include.keys(
+            "comment_id",
+            "votes",
+            "created_at",
+            "author",
+            "body"
+          );
+        });
+    });
+    it("by default sorts the array by 'created_at', in descending order", () => {
+      return request
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).to.be.descendingBy("created_at");
+        });
+    });
+    it("sorts the array by any valid column name", () => {
+      return request
+        .get("/api/articles/1/comments?sort_by=author")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).to.be.descendingBy("author");
+        });
+    });
+    it("orders the array according to an order query", () => {
+      return request
+        .get("/api/articles/1/comments?order=asc")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments).to.be.ascendingBy("created_at");
+        });
+    });
+    it("returns 400: Invalid sort query for an invalid sort_by query value", () => {
+      return request
+        .get("/api/articles/1/comments?sort_by=asc")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("400: Invalid sort query!");
+        });
+    });
+    it("returns 400: Invalid sort query for an invalid order query value", () => {
+      return request
+        .get("/api/articles/1/comments?order=comment_id")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("400: Invalid sort query!");
+        });
+    });
+  });
   describe("INVALID METHODS", () => {
     it("responds 405: Method not allowed for any unexpected method", () => {
-      const invalidMethods = ["patch", "put", "delete", "get"];
+      const invalidMethods = ["patch", "put", "delete"];
       const promises = invalidMethods.map(method => {
         return request[method]("/api/articles/1/comments")
           .expect(405)

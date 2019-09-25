@@ -31,6 +31,7 @@ exports.handlePSQL404s = (err, req, res, next) => {
 };
 exports.handlePSQL400s = (err, req, res, next) => {
   const psql400s = {
+    "42703": "400: Invalid sort query!",
     "22P02": "400: Item invalid!",
     "23502": "400: Missing field!"
   };
