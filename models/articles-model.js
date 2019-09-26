@@ -10,12 +10,14 @@ exports.fetchArticle = article_id => {
 };
 
 exports.editArticle = (article_id, votes) => {
-  if (votes && typeof votes !== "number") {
+  if (votes && isNaN(votes)) {
     return Promise.reject({ status: 400, msg: "400: Votes must be a number!" });
   } else
     return connection("articles")
-      .where("article_id", article_id)
-      .increment({ votes });
+      .where({ article_id })
+      .modify(query => {
+        if (votes) query.increment({ votes });
+      });
 };
 exports.fetchArticles = ({ sort_by, order, author, topic }) => {
   if (order && order !== "asc" && order !== "desc")

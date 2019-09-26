@@ -88,7 +88,7 @@ describe("/api/users/:username", () => {
   });
 });
 
-describe.only("/api/articles", () => {
+describe("/api/articles", () => {
   describe("GET", () => {
     it("responds 200 with an array of article objects", () => {
       return request
@@ -408,6 +408,72 @@ describe("/api/articles/:article_id/comments", () => {
       const invalidMethods = ["patch", "put", "delete"];
       const promises = invalidMethods.map(method => {
         return request[method]("/api/articles/1/comments")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("405: Method not allowed!");
+          });
+      });
+      return Promise.all(promises);
+    });
+  });
+});
+
+describe("/api/comments/:comment_id", () => {
+  describe("PATCH", () => {
+    it("responds 202 with a copy of the updated comment object, which has its votes property modified", () => {
+      return request
+        .patch("/api/comments/1")
+        .send({ inc_votes: 1 })
+        .expect(202)
+        .then(({ body: { comment } }) => {
+          expect(comment.votes).to.equal(17);
+        });
+    });
+    it("responds 400: Votes must be a number when passed an invalid inc_votes value", () => {
+      return request
+        .patch("/api/comments/1")
+        .send({ inc_votes: "null" })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("400: Votes must be a number!");
+        });
+    });
+    it("responds 404: Item not found when the comment_id is valid but non-existent", () => {
+      return request
+        .patch("/api/comments/10000")
+        .send({ inc_votes: 33 })
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("404: Item not found!");
+        });
+    });
+  });
+  describe("DELETE", () => {
+    it("responds 204 and deletes the specified comment", () => {
+      return request.delete("/api/comments/1").expect(204);
+    });
+    it("responds 404: Item not found when the comment_id is valid but non-existent", () => {
+      return request
+        .delete("/api/comments/10000")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("404: Item not found!");
+        });
+    });
+    it("responds 400: Item invalid when the comment_id is valid but non-existent", () => {
+      return request
+        .delete("/api/comments/hello")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("400: Item invalid!");
+        });
+    });
+  });
+  describe("INVALID METHODS", () => {
+    it("responds 405: Method not allowed for any unexpected method", () => {
+      const invalidMethods = ["get", "put", "post"];
+      const promises = invalidMethods.map(method => {
+        return request[method]("/api/comments/1")
           .expect(405)
           .then(({ body: { msg } }) => {
             expect(msg).to.equal("405: Method not allowed!");

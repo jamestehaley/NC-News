@@ -13,3 +13,36 @@ exports.fetchComments = (article_id, { sort_by, order }) => {
       .where({ article_id })
       .orderBy(sort_by || "created_at", order || "desc");
 };
+exports.updateComment = (comment_id, votes) => {
+  if (votes && isNaN(votes)) {
+    return Promise.reject({
+      status: 400,
+      msg: "400: Votes must be a number!"
+    });
+  } else
+    return connection("comments")
+      .where({ comment_id })
+      .modify(query => {
+        if (votes) query.increment({ votes });
+      })
+      .returning("*")
+      .then(comments => {
+        if (comments.length === 0) {
+          return Promise.reject({
+            status: 404,
+            msg: "404: Item not found!"
+          });
+        } else return comments;
+      });
+};
+exports.delComment = comment_id => {
+  // if (isNan(comment_id)) {return Promise.reject({status:400, msg: "I"})}
+  return connection("comments")
+    .del()
+    .where({ comment_id })
+    .then(deleted => {
+      if (!deleted) {
+        return Promise.reject({ status: 404, msg: "404: Item not found!" });
+      }
+    });
+};
