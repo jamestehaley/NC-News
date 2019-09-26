@@ -1,4 +1,4 @@
 const connection = require("../db/connection");
-exports.fetchTopics = () => {
+exports.selectTopics = () => {
   return connection.select("*").from("topics");
 };

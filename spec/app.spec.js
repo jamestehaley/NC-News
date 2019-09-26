@@ -20,7 +20,7 @@ describe("non-existent paths", () => {
       .get("/hello")
       .expect(404)
       .then(({ body: { msg } }) => {
-        expect(msg).to.equal("404: Page not found!");
+        expect(msg).to.equal("Page not found!");
       });
   });
 });
@@ -45,7 +45,7 @@ describe("/api/topics", () => {
         return request[method]("/api/topics")
           .expect(405)
           .then(({ body: { msg } }) => {
-            expect(msg).to.equal("405: Method not allowed!");
+            expect(msg).to.equal("Method not allowed!");
           });
       });
       return Promise.all(promises);
@@ -69,7 +69,7 @@ describe("/api/users/:username", () => {
         .get("/api/users/1")
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("404: User not found!");
+          expect(msg).to.equal("User not found!");
         });
     });
   });
@@ -80,7 +80,7 @@ describe("/api/users/:username", () => {
         return request[method]("/api/users/butter_bridge")
           .expect(405)
           .then(({ body: { msg } }) => {
-            expect(msg).to.equal("405: Method not allowed!");
+            expect(msg).to.equal("Method not allowed!");
           });
       });
       return Promise.all(promises);
@@ -171,7 +171,7 @@ describe("/api/articles", () => {
         .get("/api/articles?sort_by=hello")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("400: Invalid sort query!");
+          expect(msg).to.equal("Invalid sort query!");
         });
     });
     it("returns 400: Invalid order query when passed an invalid order value", () => {
@@ -179,7 +179,7 @@ describe("/api/articles", () => {
         .get("/api/articles?order=hello")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("400: Invalid sort query!");
+          expect(msg).to.equal("Invalid sort query!");
         });
     });
   });
@@ -190,7 +190,7 @@ describe("/api/articles", () => {
         return request[method]("/api/articles")
           .expect(405)
           .then(({ body: { msg } }) => {
-            expect(msg).to.equal("405: Method not allowed!");
+            expect(msg).to.equal("Method not allowed!");
           });
       });
       return Promise.all(promises);
@@ -230,7 +230,7 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/12333333333")
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("404: Item not found!");
+          expect(msg).to.equal("Item not found!");
         });
     });
     it("responds 400: Article type invalid when passed an invalid article_id", () => {
@@ -238,7 +238,7 @@ describe("/api/articles/:article_id", () => {
         .get("/api/articles/hello")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("400: Item invalid!");
+          expect(msg).to.equal("Item invalid!");
         });
     });
   });
@@ -258,7 +258,7 @@ describe("/api/articles/:article_id", () => {
         .send({ inc_votes: "hello!" })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("400: Votes must be a number!");
+          expect(msg).to.equal("Votes must be a number!");
         });
     });
     it("responds 404: Article not found when passed a valid but non existent article_id", () => {
@@ -267,7 +267,7 @@ describe("/api/articles/:article_id", () => {
         .send({ inc_votes: 1 })
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("404: Item not found!");
+          expect(msg).to.equal("Item not found!");
         });
     });
     it("responds 400: Article type invalid when passed an invalid article_id", () => {
@@ -275,7 +275,7 @@ describe("/api/articles/:article_id", () => {
         .patch("/api/articles/hello")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("400: Item invalid!");
+          expect(msg).to.equal("Item invalid!");
         });
     });
   });
@@ -286,7 +286,7 @@ describe("/api/articles/:article_id", () => {
         return request[method]("/api/articles/1")
           .expect(405)
           .then(({ body: { msg } }) => {
-            expect(msg).to.equal("405: Method not allowed!");
+            expect(msg).to.equal("Method not allowed!");
           });
       });
       return Promise.all(promises);
@@ -315,7 +315,7 @@ describe("/api/articles/:article_id/comments", () => {
         .send({ username: "lurker", body: "nice!" })
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("404: Item breaks foreign key constraint!");
+          expect(msg).to.equal("Item breaks foreign key constraint!");
         });
     });
     it("responds 400: Item invalid when the article_id is invalid", () => {
@@ -324,7 +324,7 @@ describe("/api/articles/:article_id/comments", () => {
         .send({ username: "lurker", body: "nice!" })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("400: Item invalid!");
+          expect(msg).to.equal("Item invalid!");
         });
     });
     it("responds 400: Missing field when the object is lacking a username or body value", () => {
@@ -333,7 +333,7 @@ describe("/api/articles/:article_id/comments", () => {
         .send({ body: "nice!" })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("400: Missing field!");
+          expect(msg).to.equal("Missing field!");
         });
     });
     it("responds 422: Body breaks foreign key constraint when the username value in the body does not match an existing username", () => {
@@ -342,7 +342,7 @@ describe("/api/articles/:article_id/comments", () => {
         .send({ username: "jellybeeen", body: "nice!" })
         .expect(422)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("422: Body breaks foreign key constraint!");
+          expect(msg).to.equal("Body breaks foreign key constraint!");
         });
     });
   });
@@ -391,7 +391,7 @@ describe("/api/articles/:article_id/comments", () => {
         .get("/api/articles/1/comments?sort_by=asc")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("400: Invalid sort query!");
+          expect(msg).to.equal("Invalid sort query!");
         });
     });
     it("returns 400: Invalid sort query for an invalid order query value", () => {
@@ -399,7 +399,7 @@ describe("/api/articles/:article_id/comments", () => {
         .get("/api/articles/1/comments?order=comment_id")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("400: Invalid sort query!");
+          expect(msg).to.equal("Invalid sort query!");
         });
     });
   });
@@ -410,7 +410,7 @@ describe("/api/articles/:article_id/comments", () => {
         return request[method]("/api/articles/1/comments")
           .expect(405)
           .then(({ body: { msg } }) => {
-            expect(msg).to.equal("405: Method not allowed!");
+            expect(msg).to.equal("Method not allowed!");
           });
       });
       return Promise.all(promises);
@@ -435,7 +435,7 @@ describe("/api/comments/:comment_id", () => {
         .send({ inc_votes: "null" })
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("400: Votes must be a number!");
+          expect(msg).to.equal("Votes must be a number!");
         });
     });
     it("responds 404: Item not found when the comment_id is valid but non-existent", () => {
@@ -444,7 +444,7 @@ describe("/api/comments/:comment_id", () => {
         .send({ inc_votes: 33 })
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("404: Item not found!");
+          expect(msg).to.equal("Item not found!");
         });
     });
   });
@@ -457,7 +457,7 @@ describe("/api/comments/:comment_id", () => {
         .delete("/api/comments/10000")
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("404: Item not found!");
+          expect(msg).to.equal("Item not found!");
         });
     });
     it("responds 400: Item invalid when the comment_id is valid but non-existent", () => {
@@ -465,7 +465,7 @@ describe("/api/comments/:comment_id", () => {
         .delete("/api/comments/hello")
         .expect(400)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("400: Item invalid!");
+          expect(msg).to.equal("Item invalid!");
         });
     });
   });
@@ -476,7 +476,7 @@ describe("/api/comments/:comment_id", () => {
         return request[method]("/api/comments/1")
           .expect(405)
           .then(({ body: { msg } }) => {
-            expect(msg).to.equal("405: Method not allowed!");
+            expect(msg).to.equal("Method not allowed!");
           });
       });
       return Promise.all(promises);

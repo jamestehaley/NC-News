@@ -11,7 +11,7 @@ exports.selectArticle = article_id => {
 
 exports.updateArticle = (article_id, votes) => {
   if (votes && isNaN(votes)) {
-    return Promise.reject({ status: 400, msg: "400: Votes must be a number!" });
+    return Promise.reject({ status: 400, msg: "Votes must be a number!" });
   } else
     return connection("articles")
       .where({ article_id })
@@ -21,7 +21,7 @@ exports.updateArticle = (article_id, votes) => {
 };
 exports.selectArticles = ({ sort_by, order, author, topic }) => {
   if (order && order !== "asc" && order !== "desc")
-    return Promise.reject({ status: 400, msg: "400: Invalid sort query!" });
+    return Promise.reject({ status: 400, msg: "Invalid sort query!" });
   else
     return connection("articles")
       .select(

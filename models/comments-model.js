@@ -6,7 +6,7 @@ exports.insertComment = (article_id, username, body) => {
 };
 exports.selectComments = (article_id, { sort_by, order }) => {
   if (order && order !== "asc" && order !== "desc")
-    return Promise.reject({ status: 400, msg: "400: Invalid sort query!" });
+    return Promise.reject({ status: 400, msg: "Invalid sort query!" });
   else
     return connection("comments")
       .select("*")
@@ -17,7 +17,7 @@ exports.updateComment = (comment_id, votes) => {
   if (votes && isNaN(votes)) {
     return Promise.reject({
       status: 400,
-      msg: "400: Votes must be a number!"
+      msg: "Votes must be a number!"
     });
   } else
     return connection("comments")
@@ -30,7 +30,7 @@ exports.updateComment = (comment_id, votes) => {
         if (comments.length === 0) {
           return Promise.reject({
             status: 404,
-            msg: "404: Item not found!"
+            msg: "Item not found!"
           });
         } else return comments;
       });
@@ -41,7 +41,7 @@ exports.delComment = comment_id => {
     .where({ comment_id })
     .then(deleted => {
       if (!deleted) {
-        return Promise.reject({ status: 404, msg: "404: Item not found!" });
+        return Promise.reject({ status: 404, msg: "Item not found!" });
       }
     });
 };
