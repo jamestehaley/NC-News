@@ -1,5 +1,5 @@
 const connection = require("../db/connection");
-exports.fetchArticle = article_id => {
+exports.selectArticle = article_id => {
   return connection
     .select("articles.*")
     .count("comments.comment_id as comment_count")
@@ -9,7 +9,7 @@ exports.fetchArticle = article_id => {
     .groupBy("articles.article_id");
 };
 
-exports.editArticle = (article_id, votes) => {
+exports.updateArticle = (article_id, votes) => {
   if (votes && isNaN(votes)) {
     return Promise.reject({ status: 400, msg: "400: Votes must be a number!" });
   } else
@@ -19,7 +19,7 @@ exports.editArticle = (article_id, votes) => {
         if (votes) query.increment({ votes });
       });
 };
-exports.fetchArticles = ({ sort_by, order, author, topic }) => {
+exports.selectArticles = ({ sort_by, order, author, topic }) => {
   if (order && order !== "asc" && order !== "desc")
     return Promise.reject({ status: 400, msg: "400: Invalid sort query!" });
   else

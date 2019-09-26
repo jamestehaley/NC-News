@@ -1,6 +1,6 @@
 const {
   insertComment,
-  fetchComments,
+  selectComments,
   updateComment,
   delComment
 } = require("../models/comments-model");
@@ -15,7 +15,7 @@ exports.postComment = (req, res, next) => {
 };
 exports.getComments = (req, res, next) => {
   const article_id = req.params.article_id;
-  fetchComments(article_id, req.query)
+  selectComments(article_id, req.query)
     .then(comments => {
       res.status(200).send({ comments });
     })

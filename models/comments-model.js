@@ -4,7 +4,7 @@ exports.insertComment = (article_id, username, body) => {
     .insert({ article_id, author: username, body })
     .returning("*");
 };
-exports.fetchComments = (article_id, { sort_by, order }) => {
+exports.selectComments = (article_id, { sort_by, order }) => {
   if (order && order !== "asc" && order !== "desc")
     return Promise.reject({ status: 400, msg: "400: Invalid sort query!" });
   else
@@ -36,7 +36,6 @@ exports.updateComment = (comment_id, votes) => {
       });
 };
 exports.delComment = comment_id => {
-  // if (isNan(comment_id)) {return Promise.reject({status:400, msg: "I"})}
   return connection("comments")
     .del()
     .where({ comment_id })
