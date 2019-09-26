@@ -88,6 +88,116 @@ describe("/api/users/:username", () => {
   });
 });
 
+describe.only("/api/articles", () => {
+  describe("GET", () => {
+    it("responds 200 with an array of article objects", () => {
+      return request
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).to.be.an.instanceOf(Array);
+          expect(articles[0]).to.be.an.instanceOf(Object);
+          expect(articles[0]).to.include.keys(
+            "article_id",
+            "votes",
+            "created_at",
+            "author",
+            "title"
+          );
+        });
+    });
+    it("each article object does not contain a body", () => {
+      return request
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles[0]).to.not.include.keys("body");
+        });
+    });
+    it("each article object additionally has a comment_count", () => {
+      return request
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles[0]).to.include.keys("comment_count");
+        });
+    });
+    it("by default sorts the array by date, in descending order", () => {
+      return request
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).to.be.descendingBy("created_at");
+        });
+    });
+    it("sorts the array by a sort_by query value", () => {
+      return request
+        .get("/api/articles?sort_by=article_id")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).to.be.descendingBy("article_id");
+        });
+    });
+    it("orders the array by an order query value", () => {
+      return request
+        .get("/api/articles?order=asc")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles).to.be.ascendingBy("created_at");
+        });
+    });
+    it("limits the array by author query value", () => {
+      return request
+        .get("/api/articles?author=butter_bridge")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          articles.forEach(article => {
+            expect(article.author).to.equal("butter_bridge");
+          });
+        });
+    });
+    it("limits the array by topic query value", () => {
+      return request
+        .get("/api/articles?topic=mitch")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          articles.forEach(article => {
+            expect(article.topic).to.equal("mitch");
+          });
+        });
+    });
+    it("returns 400: Invalid sort query when passed an invalid sort_by value", () => {
+      return request
+        .get("/api/articles?sort_by=hello")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("400: Invalid sort query!");
+        });
+    });
+    it("returns 400: Invalid order query when passed an invalid order value", () => {
+      return request
+        .get("/api/articles?order=hello")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("400: Invalid sort query!");
+        });
+    });
+  });
+  describe("INVALID METHODS", () => {
+    it("responds 405: Method not allowed for any unexpected method", () => {
+      const invalidMethods = ["patch", "put", "delete", "post"];
+      const promises = invalidMethods.map(method => {
+        return request[method]("/api/articles")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("405: Method not allowed!");
+          });
+      });
+      return Promise.all(promises);
+    });
+  });
+});
+
 describe("/api/articles/:article_id", () => {
   describe("GET", () => {
     it("responds 200 with an article object", () => {
@@ -236,7 +346,7 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
-  describe.only("GET", () => {
+  describe("GET", () => {
     it("responds 200 with an array of the comments for the article", () => {
       return request
         .get("/api/articles/1/comments")
@@ -260,7 +370,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(comments).to.be.descendingBy("created_at");
         });
     });
-    it("sorts the array by any valid column name", () => {
+    it("sorts the array by a sort_by query value", () => {
       return request
         .get("/api/articles/1/comments?sort_by=author")
         .expect(200)
@@ -268,7 +378,7 @@ describe("/api/articles/:article_id/comments", () => {
           expect(comments).to.be.descendingBy("author");
         });
     });
-    it("orders the array according to an order query", () => {
+    it("orders the array by an order query value", () => {
       return request
         .get("/api/articles/1/comments?order=asc")
         .expect(200)

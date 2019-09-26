@@ -1,14 +1,18 @@
 const articlesRouter = require("express").Router();
 const {
   getArticle,
-  patchArticle
+  patchArticle,
+  getArticles
 } = require("../controllers/articles-controller");
 const {
   postComment,
   getComments
 } = require("../controllers/comments-controller");
 const { handle405s } = require("../errors");
-
+articlesRouter
+  .route("/")
+  .get(getArticles)
+  .all(handle405s);
 articlesRouter
   .route("/:article_id")
   .get(getArticle)
