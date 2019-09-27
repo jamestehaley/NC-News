@@ -16,6 +16,14 @@
             }
           ]
         }
+      },
+      "POST": {
+        "description": "Takes a topic object and adds it to the database",
+        "accepts": { "description": "topic name", "slug": "topic" },
+        "example response": {
+          "description": "topic name",
+          "slug": "topic"
+        }
       }
     },
     "/users": {
@@ -138,6 +146,9 @@
             }
           ]
         }
+      },
+      "DELETE": {
+        "description": "removes an article and all associated comments"
       }
     },
     "/comments": {

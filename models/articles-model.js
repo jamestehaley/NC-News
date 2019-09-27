@@ -62,3 +62,13 @@ exports.insertArticle = article => {
     .into("articles")
     .returning("*");
 };
+exports.delArticle = article_id => {
+  return connection("articles")
+    .del()
+    .where({ article_id })
+    .then(count => {
+      if (count === 0) {
+        return Promise.reject({ status: 404, msg: "Item not found!" });
+      }
+    });
+};

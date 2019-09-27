@@ -63,9 +63,32 @@ describe("/api/topics", () => {
         });
     });
   });
+  describe.only("POST", () => {
+    it("responds 201 with a copy of the new topic object", () => {
+      return request
+        .post("/api/topics")
+        .send({ description: "slugs are awful", slug: "slugs" })
+        .expect(201)
+        .then(({ body: { topic } }) => {
+          expect(topic).to.eql({
+            description: "slugs are awful",
+            slug: "slugs"
+          });
+        });
+    });
+    it('responds 400: Missing field when not passed all required fields', () => {
+      return request
+        .post("/api/topics")
+        .send({ description: "slugs are awful"})
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("Missing field!");
+        });
+    });
+  });
   describe("INVALID METHODS", () => {
     it("responds 405: Method not allowed for any unexpected method", () => {
-      const invalidMethods = ["patch", "put", "delete", "post"];
+      const invalidMethods = ["patch", "put", "delete"];
       const promises = invalidMethods.map(method => {
         return request[method]("/api/topics")
           .expect(405)
@@ -412,9 +435,30 @@ describe("/api/articles/:article_id", () => {
         });
     });
   });
+  describe("DELETE", () => {
+    it("responds 204 and deletes the specified article", () => {
+      return request.delete("/api/articles/1").expect(204);
+    });
+    it("responds 404: Item not found when given a valid but non-existent article_id", () => {
+      return request
+        .delete("/api/articles/1000")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("Item not found!");
+        });
+    });
+    it("responds 400: Item invalid when given a invalid article_id", () => {
+      return request
+        .delete("/api/articles/hello")
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("Item invalid!");
+        });
+    });
+  });
   describe("INVALID METHODS", () => {
     it("responds 405: Method not allowed for any unexpected method", () => {
-      const invalidMethods = ["put", "delete", "post"];
+      const invalidMethods = ["put", "post"];
       const promises = invalidMethods.map(method => {
         return request[method]("/api/articles/1")
           .expect(405)

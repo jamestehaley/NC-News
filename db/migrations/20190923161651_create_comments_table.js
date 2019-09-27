@@ -5,14 +5,16 @@ exports.up = function(connection) {
       .integer("article_id")
       .references("article_id")
       .inTable("articles")
-      .notNullable();
+      .notNullable()
+      .onDelete("CASCADE");
     commentTable.text("body").notNullable();
     commentTable.integer("votes").defaultTo(0);
     commentTable
       .string("author")
       .references("username")
       .inTable("users")
-      .notNullable();
+      .notNullable()
+      .onDelete("CASCADE");
     commentTable.timestamp("created_at").defaultTo(connection.fn.now());
   });
 };
