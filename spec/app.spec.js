@@ -63,7 +63,7 @@ describe("/api/topics", () => {
         });
     });
   });
-  describe.only("POST", () => {
+  describe("POST", () => {
     it("responds 201 with a copy of the new topic object", () => {
       return request
         .post("/api/topics")
