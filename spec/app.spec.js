@@ -35,20 +35,21 @@ describe("/api", () => {
         });
     });
   });
-});
-describe("INVALID METHODS", () => {
-  it("responds 405: Method not allowed for any unexpected method", () => {
-    const invalidMethods = ["put", "delete", "post", "patch"];
-    const promises = invalidMethods.map(method => {
-      return request[method]("/api")
-        .expect(405)
-        .then(({ body: { msg } }) => {
-          expect(msg).to.equal("Method not allowed!");
-        });
+  describe("INVALID METHODS", () => {
+    it("responds 405: Method not allowed for any unexpected method", () => {
+      const invalidMethods = ["put", "delete", "post", "patch"];
+      const promises = invalidMethods.map(method => {
+        return request[method]("/api")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("Method not allowed!");
+          });
+      });
+      return Promise.all(promises);
     });
-    return Promise.all(promises);
   });
 });
+
 describe("/api/topics", () => {
   describe("GET", () => {
     it("responds 200 with an array of topic objects", () => {
@@ -190,6 +191,39 @@ describe("/api/articles", () => {
           });
         });
     });
+    it("limits the array to 10 articles by default", () => {
+      return request
+        .get("/api/articles")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).to.equal(10);
+        });
+    });
+    it("limits the array by a limit query value", () => {
+      return request
+        .get("/api/articles?limit=2")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).to.equal(2);
+        });
+    });
+    it("shows a page of articles dependant upon limit and p query values", () => {
+      return request
+        .get("/api/articles?limit=2&p=2")
+        .expect(200)
+        .then(({ body: { articles } }) => {
+          expect(articles.length).to.equal(2);
+          expect(articles[0].article_id).to.equal(5);
+        });
+    });
+    it("has an article_count value of all articles matching the author and or topic queries, regardless of page limit", () => {
+      return request
+        .get("/api/articles?author=butter_bridge")
+        .expect(200)
+        .then(({ body: { article_count } }) => {
+          expect(article_count).to.equal("3");
+        });
+    });
     it("returns 400: Invalid sort query when passed an invalid sort_by value", () => {
       return request
         .get("/api/articles?sort_by=hello")
@@ -207,9 +241,76 @@ describe("/api/articles", () => {
         });
     });
   });
+  describe("POST", () => {
+    it("responds 201 with a copy of the inserted article", () => {
+      return request
+        .post("/api/articles")
+        .send({
+          title: "The struggles of deciding article titles",
+          topic: "mitch",
+          author: "butter_bridge",
+          body:
+            "It's been 5 years since I started building this test, Mitch still hasn't responded to my calls for help"
+        })
+        .expect(201)
+        .then(({ body: { article } }) => {
+          expect(article).to.include.keys(
+            "article_id",
+            "title",
+            "body",
+            "topic",
+            "author",
+            "created_at"
+          );
+        });
+    });
+    it("responds 400: Missing field when passed an object missing a required field", () => {
+      return request
+        .post("/api/articles")
+        .send({
+          title: "The struggles of deciding article titles",
+          topic: "mitch",
+          author: "butter_bridge"
+        })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("Missing field!");
+        });
+    });
+    it("responds 422: Body breaks foreign key constraint when passed an object with an author that doesn't exist", () => {
+      return request
+        .post("/api/articles")
+        .send({
+          title: "The struggles of deciding article titles",
+          topic: "mitch",
+          author: "butterbridge",
+          body:
+            "It's been 5 years since I started building this test, Mitch still hasn't responded to my calls for help"
+        })
+        .expect(422)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("Body breaks foreign key constraint!");
+        });
+    });
+    it("responds 422: Body breaks foreign key constraint when passed an object with an topic that doesn't exist", () => {
+      return request
+        .post("/api/articles")
+        .send({
+          title: "The struggles of deciding article titles",
+          topic: "itch",
+          author: "butter_bridge",
+          body:
+            "It's been 5 years since I started building this test, Mitch still hasn't responded to my calls for help"
+        })
+        .expect(422)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("Body breaks foreign key constraint!");
+        });
+    });
+  });
   describe("INVALID METHODS", () => {
     it("responds 405: Method not allowed for any unexpected method", () => {
-      const invalidMethods = ["patch", "put", "delete", "post"];
+      const invalidMethods = ["patch", "put", "delete"];
       const promises = invalidMethods.map(method => {
         return request[method]("/api/articles")
           .expect(405)
@@ -418,6 +519,38 @@ describe("/api/articles/:article_id/comments", () => {
           expect(comments).to.be.ascendingBy("created_at");
         });
     });
+    it("by default limits the responses to 10", () => {
+      return request
+        .get("/api/articles/1/comments")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments.length).to.equal(10);
+        });
+    });
+    it("limits the responses according to a limit query", () => {
+      return request
+        .get("/api/articles/1/comments?limit=4")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments.length).to.equal(4);
+        });
+    });
+    it("provides a page of results depending on the p and limit query values", () => {
+      return request
+        .get("/api/articles/1/comments?limit=4&p=2")
+        .expect(200)
+        .then(({ body: { comments } }) => {
+          expect(comments[0].comment_id).to.equal(10);
+        });
+    });
+    it("additionally has a comment_count value of the total comments total regardless of limits", () => {
+      return request
+        .get("/api/articles/1/comments?limit=4&p=2")
+        .expect(200)
+        .then(({ body: { comment_count } }) => {
+          expect(comment_count).to.equal("13");
+        });
+    });
     it("returns 400: Invalid sort query for an invalid sort_by query value", () => {
       return request
         .get("/api/articles/1/comments?sort_by=asc")
@@ -443,7 +576,6 @@ describe("/api/articles/:article_id/comments", () => {
         });
     });
   });
-
   describe("INVALID METHODS", () => {
     it("responds 405: Method not allowed for any unexpected method", () => {
       const invalidMethods = ["patch", "put", "delete"];

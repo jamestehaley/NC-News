@@ -1,7 +1,9 @@
 const {
   selectArticle,
   updateArticle,
-  selectArticles
+  selectArticles,
+  countArticles,
+  insertArticle
 } = require("../models/articles-model");
 exports.getArticle = (req, res, next) => {
   article_id = req.params.article_id;
@@ -25,9 +27,16 @@ exports.patchArticle = (req, res, next) => {
     .catch(next);
 };
 exports.getArticles = (req, res, next) => {
-  selectArticles(req.query)
-    .then(articles => {
-      res.status(200).send({ articles });
+  Promise.all([selectArticles(req.query), countArticles(req.query)])
+    .then(([articles, [{ article_count }]]) => {
+      res.status(200).send({ articles, article_count });
+    })
+    .catch(next);
+};
+exports.postArticle = (req, res, next) => {
+  insertArticle(req.body)
+    .then(([article]) => {
+      res.status(201).send({ article });
     })
     .catch(next);
 };

@@ -4,14 +4,16 @@ exports.insertComment = (article_id, username, body) => {
     .insert({ article_id, author: username, body })
     .returning("*");
 };
-exports.selectComments = (article_id, { sort_by, order }) => {
+exports.selectComments = (article_id, { sort_by, order, limit, p }) => {
   if (order && order !== "asc" && order !== "desc")
     return Promise.reject({ status: 400, msg: "Invalid sort query!" });
   else
     return connection("comments")
       .select("*")
       .where({ article_id })
-      .orderBy(sort_by || "created_at", order || "desc");
+      .orderBy(sort_by || "created_at", order || "desc")
+      .limit(limit || 10)
+      .offset((p || 0) * (limit || 10));
 };
 exports.updateComment = (comment_id, votes) => {
   if (votes && isNaN(votes)) {

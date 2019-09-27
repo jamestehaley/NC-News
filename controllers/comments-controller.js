@@ -22,7 +22,13 @@ exports.getComments = (req, res, next) => {
     .then(([articleresponse, commentsresponse]) => {
       if (articleresponse.length === 0)
         next({ status: 404, msg: "Item not found!" });
-      else res.status(200).send({ comments: commentsresponse });
+      else
+        res
+          .status(200)
+          .send({
+            comments: commentsresponse,
+            comment_count: articleresponse[0].comment_count
+          });
     })
     .catch(next);
 };

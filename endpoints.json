@@ -54,8 +54,9 @@
           },
           "GET": {
             "description": "Returns an array of all comment objects for an article.",
-            "queries": [],
+            "queries": ["sort_by", "order", "limit", "p"],
             "example response": {
+              "comment_count": 2,
               "comments": [
                 {
                   "comment_id": 12,
@@ -111,8 +112,9 @@
       },
       "GET": {
         "description": "Returns an array of article objects, sorted and limited according to queries.",
-        "queries": ["sort_by", "order", "topic", "author"],
+        "queries": ["sort_by", "order", "topic", "author", "limit", "p"],
         "example response": {
+          "article_count": 2,
           "articles": [
             {
               "author": "username",

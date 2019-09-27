@@ -16,7 +16,12 @@ exports.handle405s = (req, res, next) => {
 };
 
 exports.handlePSQL422s = (err, req, res, next) => {
-  if (err.code === "23503" && err.constraint === "comments_author_foreign") {
+  const constraints = [
+    "comments_author_foreign",
+    "articles_author_foreign",
+    "articles_topic_foreign"
+  ];
+  if (err.code === "23503" && constraints.includes(err.constraint)) {
     res.status(422).send({ msg: "Body breaks foreign key constraint!" });
   } else next(err);
 };

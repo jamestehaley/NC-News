@@ -24,7 +24,7 @@ exports.updateArticle = (article_id, votes) => {
         if (votes) query.increment({ votes });
       });
 };
-exports.selectArticles = ({ sort_by, order, author, topic }) => {
+exports.selectArticles = ({ sort_by, order, author, topic, limit, p }) => {
   if (order && order !== "asc" && order !== "desc")
     return Promise.reject({ status: 400, msg: "Invalid sort query!" });
   else
@@ -41,8 +41,24 @@ exports.selectArticles = ({ sort_by, order, author, topic }) => {
       .leftJoin("comments", "comments.article_id", "articles.article_id")
       .groupBy("articles.article_id")
       .orderBy(sort_by || "created_at", order || "desc")
+      .limit(limit || 10)
+      .offset((p || 0) * (limit || 10))
       .modify(query => {
         if (author) query.where({ "articles.author": author });
         if (topic) query.where({ topic });
       });
+};
+exports.countArticles = ({ author, topic }) => {
+  return connection("articles")
+    .count("articles.article_id as article_count")
+    .modify(query => {
+      if (author) query.where({ "articles.author": author });
+      if (topic) query.where({ topic });
+    });
+};
+exports.insertArticle = article => {
+  return connection
+    .insert(article)
+    .into("articles")
+    .returning("*");
 };
