@@ -24,7 +24,31 @@ describe("non-existent paths", () => {
       });
   });
 });
-
+describe("/api", () => {
+  describe("GET", () => {
+    it("returns a JSON object of the all available endpoints", () => {
+      return request
+        .get("/api")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).to.include.keys("/api");
+        });
+    });
+  });
+});
+describe("INVALID METHODS", () => {
+  it("responds 405: Method not allowed for any unexpected method", () => {
+    const invalidMethods = ["put", "delete", "post", "patch"];
+    const promises = invalidMethods.map(method => {
+      return request[method]("/api")
+        .expect(405)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("Method not allowed!");
+        });
+    });
+    return Promise.all(promises);
+  });
+});
 describe("/api/topics", () => {
   describe("GET", () => {
     it("responds 200 with an array of topic objects", () => {
@@ -225,9 +249,17 @@ describe("/api/articles/:article_id", () => {
           expect(article).to.contain.keys("comment_count");
         });
     });
-    it("responds 404: Article not found when passed a valid but non existent article_id", () => {
+    it("responds 404: Item not found when passed a valid but non existent article_id", () => {
       return request
         .get("/api/articles/12333333333")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("Item not found!");
+        });
+    });
+    it("returns 404: Item not found when passed a valid but non-existent article_id", () => {
+      return request
+        .get("/api/articles/1233")
         .expect(404)
         .then(({ body: { msg } }) => {
           expect(msg).to.equal("Item not found!");
@@ -243,11 +275,11 @@ describe("/api/articles/:article_id", () => {
     });
   });
   describe("PATCH", function() {
-    it("responds 202 with a copy of the updated article object, which has its votes property modified", () => {
+    it("responds 200 with a copy of the updated article object, which has its votes property modified", () => {
       return request
         .patch("/api/articles/1")
         .send({ inc_votes: 1 })
-        .expect(202)
+        .expect(200)
         .then(({ body: { article } }) => {
           expect(article.votes).to.equal(101);
         });
@@ -402,7 +434,16 @@ describe("/api/articles/:article_id/comments", () => {
           expect(msg).to.equal("Invalid sort query!");
         });
     });
+    it("returns 404: Item not found for a valid but non existent article_id", () => {
+      return request
+        .get("/api/articles/1000/comments")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("Item not found!");
+        });
+    });
   });
+
   describe("INVALID METHODS", () => {
     it("responds 405: Method not allowed for any unexpected method", () => {
       const invalidMethods = ["patch", "put", "delete"];
@@ -420,11 +461,11 @@ describe("/api/articles/:article_id/comments", () => {
 
 describe("/api/comments/:comment_id", () => {
   describe("PATCH", () => {
-    it("responds 202 with a copy of the updated comment object, which has its votes property modified", () => {
+    it("responds 200 with a copy of the updated comment object, which has its votes property modified", () => {
       return request
         .patch("/api/comments/1")
         .send({ inc_votes: 1 })
-        .expect(202)
+        .expect(200)
         .then(({ body: { comment } }) => {
           expect(comment.votes).to.equal(17);
         });

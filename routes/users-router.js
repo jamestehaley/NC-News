@@ -5,7 +5,6 @@ const { getUser } = require("../controllers/users-controller");
 usersRouter
   .route("/:username")
   .get(getUser)
-  .patch()
   .all(handle405s);
 
 module.exports = usersRouter;

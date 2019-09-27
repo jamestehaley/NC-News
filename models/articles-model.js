@@ -6,7 +6,12 @@ exports.selectArticle = article_id => {
     .from("articles")
     .leftJoin("comments", "comments.article_id", "articles.article_id")
     .where("articles.article_id", article_id)
-    .groupBy("articles.article_id");
+    .groupBy("articles.article_id")
+    .then(([article]) => {
+      if (!article)
+        return Promise.reject({ status: 404, msg: "Item not found!" });
+      else return [article];
+    });
 };
 
 exports.updateArticle = (article_id, votes) => {
