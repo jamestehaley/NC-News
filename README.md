@@ -1,6 +1,6 @@
 # Northcoders News
 
-An api for northcoders news
+An api to access, post and modify Northcoders News. [Available here!](https://nc-news-jamesteh.herokuapp.com/api)
 
 ## Getting Started
 

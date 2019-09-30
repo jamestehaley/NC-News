@@ -27,6 +27,37 @@
       }
     },
     "/users": {
+      "POST": {
+        "description": "Takes a new user object and adds it to the database",
+        "accepts": {
+          "username": "Yourusername",
+          "avatar_url": "www.myavatarurl.com",
+          "name": "Yourname"
+        },
+        "example response": {
+          "username": "Yourusername",
+          "avatar_url": "www.myavatarurl.com",
+          "name": "Yourname"
+        }
+      },
+      "GET": {
+        "description": "Returns an array of all user objects",
+        "queries": [],
+        "example response": {
+          "users": [
+            {
+              "username": "butter_bridge",
+              "name": "jonny",
+              "avatar_url": "https://www.healthytherapies.com/wp-content/uploads/2016/06/Lime3.jpg"
+            },
+            {
+              "username": "icellusedkars",
+              "name": "sam",
+              "avatar_url": "https://avatars2.githubusercontent.com/u/24604688?s=460&v=4"
+            }
+          ]
+        }
+      },
       "/:username": {
         "GET": {
           "description": "Returns a user object.",
@@ -37,6 +68,9 @@
               "name": "John"
             }
           }
+        },
+        "DELETE": {
+          "description": "Deletes a user from the database."
         }
       }
     },

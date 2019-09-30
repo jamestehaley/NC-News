@@ -8,12 +8,14 @@ exports.up = function(connection) {
       .string("topic")
       .references("slug")
       .inTable("topics")
-      .notNullable();
+      .notNullable()
+      .onDelete("CASCADE");
     articleTable
       .string("author")
       .references("username")
       .inTable("users")
-      .notNullable();
+      .notNullable()
+      .onDelete("CASCADE");
     articleTable.timestamp("created_at").defaultTo(connection.fn.now());
   });
 };

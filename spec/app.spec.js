@@ -76,10 +76,10 @@ describe("/api/topics", () => {
           });
         });
     });
-    it('responds 400: Missing field when not passed all required fields', () => {
+    it("responds 400: Missing field when not passed all required fields", () => {
       return request
         .post("/api/topics")
-        .send({ description: "slugs are awful"})
+        .send({ description: "slugs are awful" })
         .expect(400)
         .then(({ body: { msg } }) => {
           expect(msg).to.equal("Missing field!");
@@ -100,7 +100,63 @@ describe("/api/topics", () => {
     });
   });
 });
-
+describe("/api/users", () => {
+  describe("POST", () => {
+    it("responds 201 with a copy of the inserted user object", () => {
+      return request
+        .post("/api/users")
+        .send({
+          username: "Yourusername",
+          avatar_url: "www.myavatarurl.com",
+          name: "Yourname"
+        })
+        .expect(201)
+        .then(({ body: { user } }) => {
+          expect(user).to.eql({
+            username: "Yourusername",
+            avatar_url: "www.myavatarurl.com",
+            name: "Yourname"
+          });
+        });
+    });
+    it("responds 400 Missing field when passed an object without a required field", () => {
+      return request
+        .post("/api/users")
+        .send({
+          username: "Yourusername",
+          name: "Yourname"
+        })
+        .expect(400)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("Missing field!");
+        });
+    });
+  });
+  describe("GET", () => {
+    it("responds 200 with an array of all user objects", () => {
+      return request
+        .get("/api/users")
+        .expect(200)
+        .then(({ body: { users } }) => {
+          expect(users).to.be.an.instanceOf(Array);
+          expect(users[0]).to.include.keys("username", "name", "avatar_url");
+        });
+    });
+  });
+  describe("INVALID METHODS", () => {
+    it("responds 405: Method not allowed for any unexpected method", () => {
+      const invalidMethods = ["put", "patch", "delete"];
+      const promises = invalidMethods.map(method => {
+        return request[method]("/api/users")
+          .expect(405)
+          .then(({ body: { msg } }) => {
+            expect(msg).to.equal("Method not allowed!");
+          });
+      });
+      return Promise.all(promises);
+    });
+  });
+});
 describe("/api/users/:username", () => {
   describe("GET", () => {
     it("responds 200 with a single user object", () => {
@@ -112,18 +168,31 @@ describe("/api/users/:username", () => {
           expect(user).to.contain.keys("username", "avatar_url", "name");
         });
     });
-    it("responds 404: User not found for any non-existent username", () => {
+    it("responds 404: Item not found for any non-existent username", () => {
       return request
         .get("/api/users/1")
         .expect(404)
         .then(({ body: { msg } }) => {
-          expect(msg).to.equal("User not found!");
+          expect(msg).to.equal("Item not found!");
+        });
+    });
+  });
+  describe("DELETE", () => {
+    it("responds 204 and deletes the user, along with all accociated articles and comments", () => {
+      return request.delete("/api/users/butter_bridge").expect(204);
+    });
+    it("responds 404: Item not found for any non existent username", () => {
+      return request
+        .delete("/api/users/1000")
+        .expect(404)
+        .then(({ body: { msg } }) => {
+          expect(msg).to.equal("Item not found!");
         });
     });
   });
   describe("INVALID METHODS", () => {
     it("responds 405: Method not allowed for any unexpected method", () => {
-      const invalidMethods = ["patch", "put", "delete", "post"];
+      const invalidMethods = ["patch", "put", "post"];
       const promises = invalidMethods.map(method => {
         return request[method]("/api/users/butter_bridge")
           .expect(405)
