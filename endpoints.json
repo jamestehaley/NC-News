@@ -107,9 +107,6 @@
           ]
         }
       },
-      "DELETE": {
-        "description": "removes an article and all associated comments"
-      },
       "/:article_id": {
         "GET": {
           "description": "Returns an article object.",
@@ -143,6 +140,9 @@
               "comment_count": 3
             }
           }
+        },
+        "DELETE": {
+          "description": "removes an article and all associated comments"
         },
         "/comments": {
           "POST": {
