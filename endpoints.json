@@ -1,5 +1,8 @@
 {
   "/api": {
+    "GET": {
+      "description": "Returns a JSON object describing all available paths."
+    },
     "/topics": {
       "GET": {
         "description": "Returns an array of all topic objects.",
@@ -75,7 +78,72 @@
       }
     },
     "/articles": {
+      "GET": {
+        "description": "Returns an array of article objects, sorted and limited according to queries.",
+        "queries": ["sort_by", "order", "topic", "author", "limit", "p"],
+        "example response": {
+          "article_count": 2,
+          "articles": [
+            {
+              "author": "username",
+              "title": "The End of the World",
+              "article_id": 20,
+              "body": "This is an article all about how...",
+              "topic": "apocalypse",
+              "created_at": "timestamp",
+              "votes": 0,
+              "comment_count": 2
+            },
+            {
+              "author": "username",
+              "title": "The Start of the World",
+              "article_id": 19,
+              "body": "This is an article about how...",
+              "topic": "creationism",
+              "created_at": "timestamp",
+              "votes": 0,
+              "comment_count": 0
+            }
+          ]
+        }
+      },
+      "DELETE": {
+        "description": "removes an article and all associated comments"
+      },
       "/:article_id": {
+        "GET": {
+          "description": "Returns an article object.",
+          "example response": {
+            "article": {
+              "author": "username",
+              "title": "The End of the World",
+              "article_id": 20,
+              "body": "this is an article all about how...",
+              "topic": "apocalypse",
+              "created_at": "timestamp",
+              "votes": 0,
+              "comment_count": 2
+            }
+          }
+        },
+        "PATCH": {
+          "description": "Takes an object with a numeric inc_votes value, and increments the article's votes value by that number. Returns a copy of the updated comment object.",
+          "accepts": {
+            "inc_votes": 1
+          },
+          "example response": {
+            "article": {
+              "author": "username",
+              "title": "The End of the World",
+              "article_id": 20,
+              "body": "this is an article all about how...",
+              "topic": "apocalypse",
+              "created_at": "timestamp",
+              "votes": 0,
+              "comment_count": 3
+            }
+          }
+        },
         "/comments": {
           "POST": {
             "description": "Takes an object with a username and body, and adds adds it to the database.",
@@ -119,70 +187,7 @@
               ]
             }
           }
-        },
-        "GET": {
-          "description": "Returns an article object.",
-          "example response": {
-            "article": {
-              "author": "username",
-              "title": "The End of the World",
-              "article_id": 20,
-              "body": "this is an article all about how...",
-              "topic": "apocalypse",
-              "created_at": "timestamp",
-              "votes": 0,
-              "comment_count": 2
-            }
-          }
-        },
-        "PATCH": {
-          "description": "Takes an object with a numeric inc_votes value, and increments the article's votes value by that number. Returns a copy of the updated comment object.",
-          "accepts": { "inc_votes": 1 },
-          "example response": {
-            "article": {
-              "author": "username",
-              "title": "The End of the World",
-              "article_id": 20,
-              "body": "this is an article all about how...",
-              "topic": "apocalypse",
-              "created_at": "timestamp",
-              "votes": 0,
-              "comment_count": 3
-            }
-          }
         }
-      },
-      "GET": {
-        "description": "Returns an array of article objects, sorted and limited according to queries.",
-        "queries": ["sort_by", "order", "topic", "author", "limit", "p"],
-        "example response": {
-          "article_count": 2,
-          "articles": [
-            {
-              "author": "username",
-              "title": "The End of the World",
-              "article_id": 20,
-              "body": "This is an article all about how...",
-              "topic": "apocalypse",
-              "created_at": "timestamp",
-              "votes": 0,
-              "comment_count": 2
-            },
-            {
-              "author": "username",
-              "title": "The Start of the World",
-              "article_id": 19,
-              "body": "This is an article about how...",
-              "topic": "creationism",
-              "created_at": "timestamp",
-              "votes": 0,
-              "comment_count": 0
-            }
-          ]
-        }
-      },
-      "DELETE": {
-        "description": "removes an article and all associated comments"
       }
     },
     "/comments": {
@@ -207,9 +212,6 @@
           "description": "Deletes a comment from the database."
         }
       }
-    },
-    "GET": {
-      "description": "Returns a JSON object describing all available paths."
     }
   }
 }
