@@ -27,6 +27,11 @@
           "description": "topic name",
           "slug": "topic"
         }
+      },
+      "/:topic": {
+        "DELETE": {
+          "description": "Deletes a topic from the database"
+        }
       }
     },
     "/users": {
@@ -113,7 +118,7 @@
           "title": "The struggles of deciding article titles",
           "topic": "mitch",
           "author": "butter_bridge",
-          "body": "It's been 5 years since I started building this test, Mitch still hasn't responded to my calls for help"
+          "body": "It's been 5 years since I started building this endpoint, Mitch still hasn't responded to my calls for help"
         },
         "example response": {
           "article": {
@@ -123,8 +128,7 @@
             "body": "It's been 5 years since I started building this test, Mitch still hasn't responded to my calls for help",
             "topic": "mitch",
             "created_at": "timestamp",
-            "votes": 0,
-            "comment_count": 0
+            "votes": 0
           }
         }
       },

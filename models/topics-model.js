@@ -1,9 +1,18 @@
-const connection = require("../db/connection");
+const connection = require('../db/connection');
 exports.selectTopics = () => {
-  return connection.select("*").from("topics");
+  return connection.select('*').from('topics');
 };
 exports.insertTopic = topic => {
-  return connection("topics")
+  return connection('topics')
     .insert(topic)
-    .returning("*");
+    .returning('*');
+};
+exports.delTopic = slug => {
+  return connection('topics')
+    .del()
+    .where({ slug })
+    .then(count => {
+      if (count === 0)
+        return Promise.reject({ status: 404, msg: 'Item not found!' });
+    });
 };
