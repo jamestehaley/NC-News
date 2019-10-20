@@ -116,14 +116,16 @@
           "body": "It's been 5 years since I started building this test, Mitch still hasn't responded to my calls for help"
         },
         "example response": {
-          "author": "butter_bridge",
-          "title": "The struggles of deciding article titles",
-          "article_id": 23,
-          "body": "It's been 5 years since I started building this test, Mitch still hasn't responded to my calls for help",
-          "topic": "mitch",
-          "created_at": "timestamp",
-          "votes": 0,
-          "comment_count": 0
+          "article": {
+            "author": "butter_bridge",
+            "title": "The struggles of deciding article titles",
+            "article_id": 23,
+            "body": "It's been 5 years since I started building this test, Mitch still hasn't responded to my calls for help",
+            "topic": "mitch",
+            "created_at": "timestamp",
+            "votes": 0,
+            "comment_count": 0
+          }
         }
       },
       "/:article_id": {
