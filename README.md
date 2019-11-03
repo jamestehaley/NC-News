@@ -1,6 +1,7 @@
 # Northcoders News
 
 An api to access, post and modify Northcoders News. [Available here!](https://nc-news-jamesteh.herokuapp.com/api)
+A link to the hosted Front-end for this project is [available here](https://nc-news-jamestehaley.netlify.com).
 
 ## Getting Started
 
@@ -8,7 +9,7 @@ These instructions will help you get the NC News server up and running on your l
 
 ### Prerequisites
 
-To get your own copy of this project, fork this github repository in your terminal, move to an appropriate directory and type the following command into your terminal using your new repository's url
+To get your own copy of this project, fork this github repository and in your terminal, move to an appropriate directory and type the following command into your terminal using your new repository's url
 
 ```
 git clone https://github.com/exampleusername/NC-News.git
@@ -20,7 +21,7 @@ In order to install dependencies, ensure that you are in the root directory of t
 npm install
 ```
 
-Additionally, in order to use [postgreSQL](https://www.postgresql.org/), you must have a postgreSQL profile.
+Additionally, in order to use [postgreSQL](https://www.postgresql.org/), you must install postgreSQL and have a postgreSQL profile.
 
 **If you are a Linux user**, you should have a user-info.js file to store your username and password. First, create the file:
 
